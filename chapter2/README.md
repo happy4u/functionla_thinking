@@ -20,25 +20,23 @@
 * 예제 2-1 전형적인 회사 프로세스(자바)
 
 ```java
-Example 2-1. Typical company process (in Java)
+// Example 2-1. Typical company process (in Java)
 package com.nealford.functionalthinking.trans;
 import java.util.List;
 
 public class TheCompanyProcess {
     public String cleanNames(List<String> listOfNames) {
         StringBuilder result = new StringBuilder(); 
-            for(int i = 0; i < listOfNames.size(); i++) {
+        for(int i = 0; i < listOfNames.size(); i++) {
             if (listOfNames.get(i).length() > 1) {
-                    result.append(capitalizeString(listOfNames.get(i)))
-                        .append(",");
+                result.append(capitalizeString(listOfNames.get(i))).append(",");
             } 
         }
         return result.substring(0, result.length() - 1).toString(); 
     }
 
     public String capitalizeString(String s) {
-    	return s.substring(0, 1).toUpperCase() 
-        	+ s.substring(1, s.length());
+    	return s.substring(0, 1).toUpperCase() + s.substring(1, s.length());
     }
 }
 ```
@@ -80,18 +78,17 @@ val result = employees
 ---
 ### 2.1.2 함수형 처리 - cont.
 * 예제 2-4 회사 프로세스의 자바 8 버젼
-
 ```java
-public String cleanNames(List<String> names) { 
-    if (names == null) return "";
-    return names
-        .stream()
-        .filter(name -> name.length() > 1)
-        .map(name -> capitalize(name))
-        .collect(Collectors.joining(","));
-
+public String cleanNames(List<String> names) {
+    return Optional.ofNullable(names)
+            .map(Collection::stream)
+            .orElse(Stream.empty())
+            .filter(name -> name.length() > 1)
+            .map(name -> capitalize(name))
+            .collect(Collectors.joining(","));
+}
 private String capitalize(String e) {
-    return e.substring(0, 1).toUpperCase() + e.substring(1, e.length());
+    return e.substring(0, 1).toUpperCase() + e.substring(1);
 }
 ```
 
@@ -100,7 +97,8 @@ private String capitalize(String e) {
 * 예제 2-5 그루비로 처리하기
 
 ```groovy
-public static String cleanUpNames(listOfNames) { listOfNames
+public static String cleanUpNames(listOfNames) { 
+    listOfNames
         .findAll { it.length() > 1 }
         .collect { it.capitalize() }
         .join ','
@@ -151,12 +149,13 @@ public static String cleanUpNames(listOfNames) { listOfNames
 	* parallelStream만 추가
 
 ```java
-public String cleanNamesP(List<String> names) { if (names == null) return "";
-    return names
-        .parallelStream()
-        .filter(n -> n.length() > 1)
-        .map(e -> capitalize(e))
-        .collect(Collectors.joining(","));
+public String cleanNamesP(List<String> names) {
+    return Optional.ofNullable(names)
+	.map(Collection::parallelStream)
+	.orElse(Stream.empty())
+	.filter(name -> name.length() > 1)
+	.map(name -> capitalize(name))
+	.collect(Collectors.joining(","));
 }
 ```
 
@@ -233,7 +232,7 @@ public String cleanNamesP(List<String> names) { if (names == null) return "";
 * 예제 2-14 자바 8에서의 필터 작업
   ```java
   public static IntStream factorsOf(int number) {
-          return range(1, number + 1)
+          return IntStream.range(1, number + 1)
                  .filter(potential -> number % potential == 0);
   }
   ```
